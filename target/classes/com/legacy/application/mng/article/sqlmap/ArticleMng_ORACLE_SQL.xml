@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.mng.article.mapper.ArticleMngMapper">
+
+    <!-- 게시글 리스트 -->
+    <select id="getArticleList" parameterType="com.legacy.application.mng.article.vo.ArticleMngVO" resultType="com.legacy.application.mng.article.vo.ArticleMngVO">
+        SELECT
+            TA.ARTICLE_SEQ,
+            TA.SUBJECT,
+            TA.CONTENT,
+            TA.READ_CNT,
+            TA.NOTICE_YN,
+            TA.INPT_IP,
+            TA.INPT_USER_NAME,
+            TA.INPT_DATE,
+            TA.UPD_DATE
+        FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND DEL_YN = 'N'
+        AND BBS_INFO_SEQ = #{bbs_info_seq}
+        ORDER BY TA.INPT_DATE DESC
+    </select>
+
+    <!-- 게시글 상세정보 -->
+    <select id="getArticleDetail" parameterType="com.legacy.application.mng.article.vo.ArticleMngVO" resultType="com.legacy.application.mng.article.vo.ArticleMngVO">
+        SELECT
+            TA.ARTICLE_SEQ,
+            TA.BBS_INFO_SEQ,
+            TA.SUBJECT,
+            TA.CONTENT,
+            TA.NOTICE_YN,
+            TA.INPT_USER_NAME,
+            TA.INPT_IP,
+            TA.UPD_IP,
+            TA.INPT_DATE,
+            TA.UPD_DATE
+        FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND TA.ARTICLE_SEQ = #{article_seq}
+    </select>
+
+    <!-- 게시글 등록 -->
+    <insert id="setArticle" parameterType="com.legacy.application.mng.article.vo.ArticleMngVO">
+        <selectKey order="BEFORE" keyProperty="article_seq" resultType="java.lang.String">
+            SELECT TB_ARTICLES_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+            INSERT INTO TB_ARTICLES
+                (
+                    ARTICLE_SEQ,
+                    BBS_INFO_SEQ,
+                    SUBJECT,
+                    CONTENT,
+                    NOTICE_YN,
+                    USER_ID,
+                    INPT_USER_NAME,
+                    DEL_YN,
+                    READ_CNT,
+                    INPT_IP,
+                    INPT_DATE
+                )
+            VALUES
+                (
+                    #{article_seq},
+                    #{bbs_info_seq},
+                    #{subject},
+                    #{content},
+                    #{notice_yn},
+                    #{user_id},
+                    #{inpt_user_name},
+                    'N',
+                    0,
+                    #{inpt_ip},
+                    SYSDATE
+                )
+    </insert>
+
+    <!-- 게시글 수정 -->
+    <update id="updArticle" parameterType="com.legacy.application.mng.article.vo.ArticleMngVO">
+        UPDATE TB_ARTICLES
+        SET
+            SUBJECT = #{subject},
+            CONTENT = #{content},
+            NOTICE_YN = #{notice_yn},
+            INPT_USER_NAME = #{inpt_user_name},
+            UPD_IP = #{upd_ip},
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+        AND ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <update id="delArticle" parameterType="com.legacy.application.mng.article.vo.ArticleMngVO">
+        UPDATE TB_ARTICLES
+        SET
+            DEL_YN = 'Y',
+            UPD_IP = #{upd_ip},
+            UPD_DATE = SYSDATE
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 물리삭제 -->
+    <delete id="delArticleReal" parameterType="com.legacy.application.mng.article.vo.ArticleMngVO">
+        DELETE FROM TB_ARTICLES
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </delete>
+</mapper>

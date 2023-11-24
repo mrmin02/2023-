@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.mng.user.mapper.UserMngMapper">
+
+    <!-- 관리자 유저 리스트 TODO 검색조건 추가 -->
+    <select id="getUserList" parameterType="com.legacy.application.mng.user.vo.UserMngVO" resultType="com.legacy.application.mng.user.vo.UserMngVO">
+        SELECT
+            USER_SEQ,
+            USER_ID,
+            USER_NAME,
+            USER_AUTH,
+            DEL_YN,
+            INPT_DATE,
+            UPD_DATE
+        FROM TB_USER
+        WHERE 1=1
+        ORDER BY INPT_DATE DESC
+    </select>
+
+    <!-- 유저 정보 get -->
+    <select id="getUserDetail" parameterType="com.legacy.application.mng.user.vo.UserMngVO" resultType="com.legacy.application.mng.user.vo.UserMngVO">
+        SELECT
+            USER_SEQ,
+            USER_ID,
+            USER_NAME,
+            USER_AUTH,
+            DEL_YN,
+            INPT_DATE,
+            UPD_DATE
+        FROM TB_USER
+        WHERE 1=1
+        AND USER_SEQ = #{user_seq}
+    </select>
+
+    <!-- 회원정보 등록 -->
+    <insert id="setUserInfo" parameterType="com.legacy.application.mng.user.vo.UserMngVO">
+        <selectKey order="BEFORE" keyProperty="user_seq" resultType="java.lang.String">
+            SELECT TB_USER_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_USER
+            (
+                USER_SEQ,
+                USER_ID,
+                USER_PWD,
+                USER_NAME,
+                USER_AUTH,
+                DEL_YN,
+                INPT_DATE
+            )
+        VALUES
+            (
+                #{user_seq},
+                #{user_id},
+                #{user_pwd},
+                #{user_name},
+                #{user_auth},
+                #{del_yn},
+                SYSDATE
+            )
+    </insert>
+
+    <!-- 회원정보 수정 -->
+    <update id="updUserInfo" parameterType="com.legacy.application.mng.user.vo.UserMngVO">
+        UPDATE TB_USER
+        SET
+            USER_NAME = #{user_name},
+            <if test="user_pwd != null">
+                USER_PWD = #{user_pwd},
+            </if>
+            USER_AUTH = #{user_auth},
+            DEL_YN = #{del_yn},
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+        AND USER_SEQ = #{user_seq}
+    </update>
+
+    <!-- 회원정보 삭제 -->
+    <update id="delUserInfo" parameterType="com.legacy.application.mng.user.vo.UserMngVO">
+        UPDATE TB_USER
+        SET
+        DEL_YN = 'Y',
+        UPD_DATE = SYSDATE
+        WHERE 1=1
+        AND USER_SEQ = #{user_seq}
+    </update>
+
+
+</mapper>

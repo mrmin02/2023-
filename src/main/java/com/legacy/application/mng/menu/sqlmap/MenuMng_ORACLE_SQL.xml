@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.mng.menu.mapper.MenuMngMapper">
+
+    <!-- 게시판 리스트 -->
+    <select id="getBbsList" parameterType="com.legacy.application.mng.menu.vo.MenuMngVO" resultType="com.legacy.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            BBS_CD,
+            BBS_NM
+        FROM TB_BBS_INFO
+        WHERE 1=1
+        AND BBS_USE_YN = 'Y'
+        AND BBS_DEL_YN = 'N'
+        ORDER BY BBS_INFO_SEQ ASC
+    </select>
+
+    <!-- HTML 리스트 -->
+    <select id="getHtmlList" parameterType="com.legacy.application.mng.menu.vo.MenuMngVO" resultType="com.legacy.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            HTML_SEQ,
+            HTML_TITLE
+        FROM TB_HTML
+        WHERE 1=1
+        AND DEL_YN = 'N'
+        ORDER BY HTML_SEQ ASC
+    </select>
+
+    <insert id="setMenu" parameterType="com.legacy.application.mng.menu.vo.MenuMngVO">
+        INSERT INTO TB_MENU
+        (
+            MENU_SEQ,
+            MENU_TITLE,
+            MENU_TYPE,
+            MENU_LINK_TYPE,
+            MENU_LINK,
+            ARTICLE_INFO,
+            HTML_INFO,
+            MENU_DEPTH,
+            MENU_ORDER,
+            PRT_SEQ,
+            INPT_DATE,
+            MENU_JSON
+        ) VALUES (
+            #{menu_seq},
+            #{menu_title},
+            #{menu_type},
+            #{menu_link_type},
+            #{menu_link},
+            #{article_info},
+            #{html_info},
+            #{menu_depth},
+            #{menu_order},
+            #{prt_seq},
+            SYSDATE,
+            #{menu_json}
+        )
+    </insert>
+
+    <select id="getNowMenuJson" parameterType="com.legacy.application.mng.menu.vo.MenuMngVO" resultType="com.legacy.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            MENU_JSON,
+            INPT_DATE
+        FROM TB_MENU
+        WHERE MENU_JSON IS NOT NULL
+        AND ROWNUM = 1
+    </select>
+
+    <insert id="setMenuBackup" parameterType="com.legacy.application.mng.menu.vo.MenuMngVO">
+        INSERT INTO TB_MENU_BAK
+        (
+            MENU_JSON,
+            BAK_DATE
+        ) VALUES (
+            #{menu_json},
+            #{inpt_date}
+         )
+    </insert>
+
+    <delete id="delMenu">
+        DELETE FROM TB_MENU
+    </delete>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.site.main.mapper.MainMapper">
+
+    <select id="getMenuList" resultType="com.legacy.application.site.main.vo.MenuVO">
+        SELECT
+            MENU_SEQ,
+            MENU_TITLE,
+            MENU_TYPE,
+            MENU_LINK_TYPE,
+            MENU_LINK,
+            ARTICLE_INFO,
+            HTML_INFO,
+            MENU_DEPTH,
+            MENU_ORDER,
+            PRT_SEQ
+        FROM TB_MENU
+        WHERE 1=1
+        START WITH MENU_DEPTH = 0
+        CONNECT BY PRIOR MENU_SEQ = PRT_SEQ
+    </select>
+
+</mapper>

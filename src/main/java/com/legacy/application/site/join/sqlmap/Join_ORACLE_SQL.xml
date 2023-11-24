@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.site.join.mapper.JoinMapper">
+
+    <!-- 아이디 중복체크 -->
+	<select id="checkId" parameterType="com.legacy.application.common.system.login.vo.LoginVO" resultType="int">
+        SELECT
+            COUNT(user_id)
+        FROM TB_USER
+        WHERE 1=1
+        AND USER_ID = #{user_id}
+    </select>
+
+    <!-- 회원가입 -->
+    <insert id="setUserInfo" parameterType="com.legacy.application.common.system.login.vo.LoginVO" >
+        <selectKey order="BEFORE" keyProperty="user_seq" resultType="java.lang.String">
+            SELECT TB_USER_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_USER
+            (
+               USER_SEQ,
+                USER_ID,
+                USER_PWD,
+                USER_NAME,
+                USER_AUTH,
+                DEL_YN,
+                INPT_DATE
+            )
+        VALUES (
+                    #{user_seq},
+                    #{user_id},
+                    #{user_pwd},
+                    #{user_name},
+                    'ROLE_USER',
+                    'N',
+                    SYSDATE
+               )
+    </insert>
+
+    <!-- 회원탈퇴 시, 비밀번호 확인 -->
+    <select id="checkPwd" parameterType="com.legacy.application.common.system.login.vo.LoginVO" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM TB_USER
+        WHERE 1=1
+        AND USER_SEQ = #{user_seq}
+        AND USER_PWD = #{user_pwd}
+    </select>
+
+    <!-- 회원정보 수정 -->
+    <update id="updUserInfo" parameterType="com.legacy.application.common.system.login.vo.LoginVO">
+        UPDATE TB_USER
+        SET
+            USER_PWD = #{user_pwd},
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+        AND USER_SEQ = #{user_seq}
+    </update>
+
+    <!-- 회원 탈퇴 처리 -->
+    <update id="delUserInfo" parameterType="com.legacy.application.common.system.login.vo.LoginVO">
+        UPDATE TB_USER
+        SET
+            DEL_YN = 'Y',
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+        AND USER_SEQ = #{user_seq}
+    </update>
+
+</mapper>

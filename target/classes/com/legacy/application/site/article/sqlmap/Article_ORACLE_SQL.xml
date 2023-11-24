@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.site.article.mapper.ArticleMapper">
+
+    <sql id="articleWhere">
+        <if test="searchCondition != null and searchCondition != '' and searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition == 'TA.ALL'">
+                    AND (TA.SUBJECT LIKE '%'||#{searchKeyword}||'%'
+                    OR TA.CONTENT LIKE '%'||#{searchKeyword}||'%'
+                </when>
+                <otherwise>
+                    AND ${searchCondition} LIKE '%'||#{searchKeyword}||'%'
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="getMainArticleList" parameterType="com.legacy.application.site.article.vo.ArticleVO" resultType="com.legacy.application.site.article.vo.ArticleVO">
+        SELECT bbsList.*
+        FROM (
+            SELECT ROW_NUMBER() OVER (ORDER BY TA.INPT_DATE DESC) AS rNum, TA.ARTICLE_SEQ,
+                     TA.SUBJECT,
+                     TO_CHAR(TA.INPT_DATE, 'YYYY.MM.DD') AS INPT_DATE
+              FROM TB_ARTICLES TA
+              WHERE 1 = 1
+                AND TA.BBS_INFO_SEQ = (SELECT TBI.BBS_INFO_SEQ FROM TB_BBS_INFO TBI WHERE TBI.BBS_CD = #{bbs_cd})
+                AND TA.NOTICE_YN = 'N'
+                AND TA.DEL_YN = 'N'
+          )bbsList
+        WHERE 1=1
+          AND bbsList.rNum BETWEEN 0 AND 6
+    </select>
+
+    <select id="getNoticeList"  parameterType="com.legacy.application.site.article.vo.ArticleVO" resultType="com.legacy.application.site.article.vo.ArticleVO">
+        SELECT
+            bbsList.*
+        FROM
+        (
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY TA.INPT_DATE DESC) AS rNum,
+                TA.ARTICLE_SEQ,
+                TA.SUBJECT,
+                TA.READ_CNT,
+                TA.NOTICE_YN,
+                TA.INPT_IP,
+                TA.INPT_USER_NAME,
+                TO_CHAR(TA.INPT_DATE, 'YYYY.MM.DD') AS INPT_DATE
+            FROM TB_ARTICLES TA
+            WHERE 1=1
+            AND TA.NOTICE_YN = 'Y'
+            AND TA.DEL_YN = 'N'
+            AND TA.BBS_INFO_SEQ = #{bbs_info_seq}
+        ) bbsList
+            WHERE 1=1
+    </select>
+
+    <select id="getArticleListCnt" parameterType="com.legacy.application.site.article.vo.ArticleVO" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND TA.NOTICE_YN = 'N'
+        AND TA.DEL_YN = 'N'
+        AND TA.BBS_INFO_SEQ = #{bbs_info_seq}
+        <include refid="articleWhere"/>
+    </select>
+
+    <!-- 게시글 리스트 -->
+    <select id="getArticleList" parameterType="com.legacy.application.site.article.vo.ArticleVO" resultType="com.legacy.application.site.article.vo.ArticleVO">
+        SELECT
+            bbsList.*
+        FROM
+            (
+                SELECT
+                    ROW_NUMBER() OVER (ORDER BY TA.INPT_DATE DESC) AS rNum,
+                    TA.ARTICLE_SEQ,
+                    TA.SUBJECT,
+                    TA.READ_CNT,
+                    TA.NOTICE_YN,
+                    TA.INPT_IP,
+                    TA.INPT_USER_NAME,
+                    TO_CHAR(TA.INPT_DATE, 'YYYY.MM.DD') AS INPT_DATE
+                FROM TB_ARTICLES TA
+                WHERE 1=1
+                  AND TA.NOTICE_YN = 'N'
+                  AND TA.DEL_YN = 'N'
+                  AND TA.BBS_INFO_SEQ = #{bbs_info_seq}
+                <include refid="articleWhere"/>
+            ) bbsList
+        WHERE 1=1
+        AND bbsList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+    </select>
+
+    <update id="updArticleReadCNT" parameterType="com.legacy.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES
+        SET
+            READ_CNT = READ_CNT+1
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <select id="getArticleDetail" parameterType="com.legacy.application.site.article.vo.ArticleVO" resultType="com.legacy.application.site.article.vo.ArticleVO">
+        SELECT
+            TA.ARTICLE_SEQ,
+            TA.SUBJECT,
+            TA.CONTENT,
+            TA.READ_CNT,
+            TA.NOTICE_YN,
+            TA.USER_ID,
+            TA.INPT_USER_NAME,
+            TO_CHAR(TA.INPT_DATE, 'YYYY.MM.DD') AS INPT_DATE
+            FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND TA.ARTICLE_SEQ = #{article_seq}
+        AND TA.DEL_YN = 'N'
+    </select>
+
+    <!-- 게시글 등록 -->
+    <insert id="setArticle" parameterType="com.legacy.application.site.article.vo.ArticleVO">
+        <selectKey order="BEFORE" keyProperty="article_seq" resultType="java.lang.String">
+            SELECT TB_ARTICLES_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_ARTICLES
+            (
+                ARTICLE_SEQ,
+                BBS_INFO_SEQ,
+                SUBJECT,
+                CONTENT,
+                NOTICE_YN,
+                USER_ID,
+                INPT_USER_NAME,
+                DEL_YN,
+                READ_CNT,
+                INPT_IP,
+                INPT_DATE
+            )
+        VALUES
+            (
+                #{article_seq},
+                #{bbs_info_seq},
+                #{subject},
+                #{content},
+                #{notice_yn},
+                #{user_id},
+                #{inpt_user_name},
+                'N',
+                0,
+                #{inpt_ip},
+                SYSDATE
+            )
+    </insert>
+
+    <!-- 게시글 수정 -->
+    <update id="updArticle" parameterType="com.legacy.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES
+        SET
+            SUBJECT = #{subject},
+            CONTENT = #{content},
+            NOTICE_YN = #{notice_yn},
+            UPD_IP = #{upd_ip},
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+          AND ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <update id="delArticle" parameterType="com.legacy.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES
+        SET
+            DEL_YN = 'Y',
+            UPD_IP = #{upd_ip},
+            UPD_DATE = SYSDATE
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 물리삭제 -->
+    <delete id="delArticleReal" parameterType="com.legacy.application.site.article.vo.ArticleVO">
+        DELETE FROM TB_ARTICLES
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </delete>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.site.page.mapper.PageMapper">
+
+    <select id="getPageDetail" parameterType="com.legacy.application.site.page.vo.PageVO" resultType="com.legacy.application.site.page.vo.PageVO">
+        SELECT
+            HTML_SEQ,
+            HTML_TITLE,
+            HTML_CONTENT,
+            INPT_DATE,
+            UPD_DATE
+        FROM TB_HTML
+        WHERE HTML_SEQ = #{html_seq}
+    </select>
+
+</mapper>

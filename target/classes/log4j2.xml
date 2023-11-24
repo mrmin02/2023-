@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %5p [%c] %m%n" />
+		</Console>
+	</Appenders>r
+
+	<Loggers>
+		<Logger name="org.springframework.security.web.util.matcher.AntPathRequestMatcher" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<Logger name="org.springframework.web.servlet.resource.ResourceHttpRequestHandler" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<Logger name="org.springframework.security.web.FilterChainProxy" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<Logger name="org.springframework.security.web.authentication.AnonymousAuthenticationFilter" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>
+		<Logger name="org.springframework" level="DEBUG" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<!-- 쿼리만 조회하고 싶을때 아래 옵션을 켜세요. -->
+		<Logger name="jdbc.sqlonly" additivity="false" level="INFO">
+			<AppenderRef ref="console" />
+		</Logger>
+		<!-- SQL -->
+		<!--<Logger name="org.mybatis.spring.SqlSessionUtils" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Logger name="jdbc.resultsettable" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <logger name="java.sql" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </logger>
+        <Logger name="jdbc.sqltiming" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Logger name="jdbc.resultset" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Logger name="jdbc.audit" additivity="false" level="ERROR">
+            <AppenderRef ref="console" />
+        </Logger>-->
+		<!-- //SQL -->
+		<!--
+        <Logger name="egovframework" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+        <Root level="DEBUG">
+            <AppenderRef ref="console" />
+        </Root>
+        -->
+	</Loggers>
+</Configuration>

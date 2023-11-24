@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+
+	<!-- 아래의 내용은 MybatisConfig.java 로 이동 -->
+
+<!--	&lt;!&ndash; SqlSession setup for MyBatis Database Layer &ndash;&gt;-->
+<!--	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">-->
+<!--		<property name="dataSource" ref="dataSource" />-->
+<!--		<property name="mapperLocations" value="classpath:/com/legacy/application/**/**/sqlmap/*_ORACLE_SQL.xml" />-->
+<!--	</bean>-->
+
+<!--	&lt;!&ndash;  전자정부프레임워크  @Mapper(abcMapper)  지정된 패키지 안에서 annotation 스캔 &ndash;&gt;-->
+<!--	&lt;!&ndash; https://www.egovframe.go.kr/wiki/doku.php?id=egovframework:rte2:psl:dataaccess:mybatisguide &ndash;&gt;-->
+<!--	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">-->
+<!--		<property name="basePackage" value="com.legacy.application.**.mapper" />-->
+<!--	</bean>-->
+
+        <!-- Root Context: defines shared resources visible to all other web components -->
+<!--	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >-->
+<!--		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>-->
+<!--		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>-->
+<!--		<property name="username" value="minseok"></property>-->
+<!--		<property name="password" value="2222"></property>-->
+<!--	</bean>-->
+
+<!--	<mybatis-spring:scan annotation="com.legacy.config.annotation.Mapper"-->
+<!--						 base-package="com.legacy.application.**.**.**.mapper" />-->
+
+</beans>

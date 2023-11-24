@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+    <!-- 관리자 layout-->
+    <definition name="mng-layout" template="/WEB-INF/views/layouts/mng/mngLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/views/layouts/mng/mngHeader.jsp" />
+        <put-attribute name="menu" value="/WEB-INF/views/layouts/mng/mngLeftMenu.jsp" />
+        <put-attribute name="content" value="" />
+    </definition>
+
+    <definition name="mng/*" extends="mng-layout">
+        <put-attribute name="content" value="/WEB-INF/views/mng/{1}.jsp" />
+    </definition>
+    <definition name="mng/*/*" extends="mng-layout">
+        <put-attribute name="content" value="/WEB-INF/views/mng/{1}/{2}.jsp" />
+    </definition>
+    <definition name="mng/*/*/*" extends="mng-layout">
+        <put-attribute name="content" value="/WEB-INF/views/mng/{1}/{2}/{3}.jsp" />
+    </definition>
+    <definition name="mng/*/*/*/*" extends="mng-layout">
+        <put-attribute name="content" value="/WEB-INF/views/mng/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+
+    <!-- 사용자 layout-->
+    <definition name="site-layout" template="/WEB-INF/views/layouts/site/siteLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/views/layouts/site/siteHeader.jsp" />
+        <put-attribute name="header_sub" value="/WEB-INF/views/layouts/site/siteHeaderSub.jsp" />
+        <put-attribute name="content" value="" />
+        <put-attribute name="footer" value="/WEB-INF/views/layouts/site/siteFooter.jsp" />
+    </definition>
+
+    <definition name="site/*" extends="site-layout">
+        <put-attribute name="content" value="/WEB-INF/views/site/{1}.jsp" />
+    </definition>
+    <definition name="site/*/*" extends="site-layout">
+        <put-attribute name="content" value="/WEB-INF/views/site/{1}/{2}.jsp" />
+    </definition>
+    <definition name="site/*/*/*" extends="site-layout">
+        <put-attribute name="content" value="/WEB-INF/views/site/{1}/{2}/{3}.jsp" />
+    </definition>
+    <definition name="site/*/*/*/*" extends="site-layout">
+        <put-attribute name="content" value="/WEB-INF/views/site/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+
+</tiles-definitions>

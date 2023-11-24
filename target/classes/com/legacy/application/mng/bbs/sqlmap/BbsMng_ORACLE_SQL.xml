@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.mng.bbs.mapper.BbsMngMapper">
+
+    <!-- 게시판 정보 리스트 -->
+    <select id="getBbsList" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO" resultType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBI.BBS_INFO_SEQ,
+            TBI.BBS_CD,
+            TBI.BBS_NM,
+            TBI.BBS_REMARK,
+            TBI.BBS_USE_YN,
+            TBI.BBS_DEL_YN,
+            TBI.INPT_DATE,
+            TBI.UPD_DATE,
+            TBD.BBS_TYPE,
+            TBD.NOTICE_USE_YN
+        FROM TB_BBS_INFO TBI
+        INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        WHERE 1=1
+        ORDER BY TBI.INPT_DATE DESC
+    </select>
+
+    <!-- 게시판 코드 중복 체크 -->
+    <select id="checkBbsCd" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO" resultType="int">
+        SELECT
+            COUNT(BBS_INFO_SEQ)
+        FROM TB_BBS_INFO
+        WHERE 1=1
+        AND BBS_CD = #{bbs_cd}
+    </select>
+
+    <!-- 게시판 detail get -->
+    <select id="getBbsDetail" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO" resultType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBI.BBS_INFO_SEQ,
+            TBI.BBS_CD,
+            TBI.BBS_NM,
+            TBI.BBS_REMARK,
+            TBI.BBS_USE_YN,
+            TBI.BBS_DEL_YN,
+            TBI.INPT_DATE,
+            TBI.UPD_DATE,
+            TBD.ATTACH_FILE_USE_YN,
+            TBD.FILE_CNT,
+            TBD.BBS_TYPE,
+            TBD.BBS_DFT_LIST_CNT,
+            TBD.BBS_PAGE_CNT,
+            TBD.NOTICE_USE_YN,
+            TBD.FILE_EXT
+        FROM TB_BBS_INFO TBI
+        INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        WHERE 1=1
+          <choose>
+              <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                  AND TBI.BBS_INFO_SEQ = #{bbs_info_seq}
+              </when>
+              <otherwise>
+                  AND TBI.BBS_CD = #{bbs_cd}
+              </otherwise>
+          </choose>
+    </select>
+
+    <!-- 게시판 정보 insert ( TB_BBS_INFO ) -->
+    <insert id="setBbsInfo" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        <selectKey order="BEFORE" keyProperty="bbs_info_seq" resultType="java.lang.String">
+            SELECT TB_BBS_INFO_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_BBS_INFO
+            (
+                BBS_INFO_SEQ,
+                BBS_CD,
+                BBS_NM,
+                BBS_REMARK,
+                BBS_USE_YN,
+                BBS_DEL_YN,
+                INPT_DATE
+            )
+        VALUES
+            (
+                #{bbs_info_seq},
+                #{bbs_cd},
+                #{bbs_nm},
+                #{bbs_remark},
+                #{bbs_use_yn},
+                #{bbs_del_yn},
+                SYSDATE
+            )
+    </insert>
+
+    <!-- 게시판 정보 update ( TB_BBS_INFO ) -->
+    <update id="updBbsInfo" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        UPDATE TB_BBS_INFO
+        SET
+            <if test='bbs_cd_cg eq "Y"'>
+                BBS_CD = #{bbs_cd},
+            </if>
+            BBS_NM = #{bbs_nm},
+            BBS_REMARK = #{bbs_remark},
+            BBS_USE_YN = #{bbs_use_yn},
+            BBS_DEL_YN = #{bbs_del_yn},
+            UPD_DATE   = SYSDATE
+        WHERE 1=1
+        AND BBS_INFO_SEQ = #{bbs_info_seq}
+    </update>
+
+    <!-- 게시판 정보 삭제 ( TB_BBS_INFO ) -->
+    <update id="delBbsInfo" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        UPDATE TB_BBS_INFO
+        SET
+            BBS_USE_YN = 'N',
+            BBS_DEL_YN = 'Y'
+        WHERE 1=1
+        AND BBS_INFO_SEQ = #{bbs_info_seq}
+    </update>
+
+    <!-- 게시판 정보 물리삭제 -->
+    <delete id="delRealBbsInfo" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        DELETE FROM TB_BBS_INFO
+        WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </delete>
+
+    <!-- 게시판 상세정보 등록 -->
+    <insert id="setBbsDetail" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        INSERT INTO TB_BBS_DETAIL
+            (
+                BBS_INFO_SEQ,
+                ATTACH_FILE_USE_YN,
+                FILE_CNT,
+                BBS_TYPE,
+                BBS_DFT_LIST_CNT,
+                BBS_PAGE_CNT,
+                NOTICE_USE_YN,
+                FILE_EXT
+            )
+        VALUES
+            (
+                #{bbs_info_seq},
+                #{attach_file_use_yn},
+                #{file_cnt},
+                #{bbs_type},
+                #{bbs_dft_list_cnt},
+                #{bbs_page_cnt},
+                #{notice_use_yn},
+                #{file_ext}
+            )
+    </insert>
+
+    <!-- 게시판 상세정보 수정 -->
+    <update id="updBbsDetail" parameterType="com.legacy.application.mng.bbs.vo.BbsMngVO">
+        UPDATE TB_BBS_DETAIL
+        SET
+            ATTACH_FILE_USE_YN = #{attach_file_use_yn},
+            FILE_CNT = #{file_cnt},
+            BBS_TYPE = #{bbs_type},
+            BBS_DFT_LIST_CNT = #{bbs_dft_list_cnt},
+            BBS_PAGE_CNT = #{bbs_page_cnt},
+            NOTICE_USE_YN = #{notice_use_yn},
+            FILE_EXT = #{file_ext}
+        WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </update>
+</mapper>

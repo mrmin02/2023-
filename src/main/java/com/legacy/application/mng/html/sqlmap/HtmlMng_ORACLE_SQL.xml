@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.legacy.application.mng.html.mapper.HtmlMngMapper">
+
+    <!-- html 리스트 -->
+    <select id="getHtmlList" parameterType="com.legacy.application.mng.html.vo.HtmlMngVO" resultType="com.legacy.application.mng.html.vo.HtmlMngVO">
+        SELECT
+            HTML_SEQ,
+            HTML_TITLE,
+            DEL_YN,
+            TO_CHAR(INPT_DATE, 'YYYY.MM.DD') AS INPT_DATE,
+            TO_CHAR(UPD_DATE, 'YYYY.MM.DD') AS UPD_DATE
+        FROM TB_HTML
+        WHERE 1=1
+        AND DEL_YN = 'N'
+        ORDER BY INPT_DATE DESC
+    </select>
+
+    <!-- html 상세정보 -->
+    <select id="getHtml" parameterType="com.legacy.application.mng.html.vo.HtmlMngVO" resultType="com.legacy.application.mng.html.vo.HtmlMngVO">
+        SELECT
+            HTML_SEQ,
+            HTML_TITLE,
+            HTML_CONTENT,
+            DEL_YN,
+            INPT_DATE,
+            UPD_DATE
+        FROM TB_HTML
+        WHERE 1=1
+        AND HTML_SEQ = #{html_seq}
+    </select>
+
+    <!-- html 등록 -->
+    <insert id="setHtml" parameterType="com.legacy.application.mng.html.vo.HtmlMngVO">
+        <selectKey order="BEFORE" keyProperty="html_seq" resultType="java.lang.String">
+            SELECT TB_HTML_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_HTML
+            (
+                HTML_SEQ,
+                HTML_TITLE,
+                HTML_CONTENT,
+                DEL_YN,
+                INPT_DATE
+            ) VALUES (
+                #{html_seq},
+                #{html_title},
+                #{html_content},
+                'N',
+                SYSDATE
+            )
+    </insert>
+
+    <!-- html 수정 -->
+    <update id="updHtml" parameterType="com.legacy.application.mng.html.vo.HtmlMngVO">
+        UPDATE TB_HTML
+        SET
+            HTML_TITLE = #{html_title},
+            HTML_CONTENT = #{html_content},
+            DEL_YN = #{del_yn},
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+        AND html_seq = #{html_seq}
+    </update>
+
+    <!-- html 삭제 -->
+    <update id="delHtml" parameterType="com.legacy.application.mng.html.vo.HtmlMngVO">
+        UPDATE TB_HTML
+        SET
+            DEL_YN = 'Y',
+            UPD_DATE = SYSDATE
+        WHERE 1=1
+          AND html_seq = #{html_seq}
+    </update>
+
+</mapper>
